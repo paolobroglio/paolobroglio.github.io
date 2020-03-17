@@ -47,7 +47,7 @@ My perspective on this is that I can optimize my time and be more productive sin
 
 ## Wrapping up
 
-I think that this emergency will permanently change the way we look at work. For what concerns Italy, its people are responding well to the emergency measures and medical staff all across the country is doing a great job managing this situation. We all need to change our behaviour when other people's lives are in danger. Adopting something like remote working we are thus helping decreasing chances that COVID-19 will spread more than usual. I changed a little bit my daily routine, but this will result in a great change for others.
+I think that this emergency will permanently change the way we look at work. For what concerns Italy, its people are responding well to the emergency measures and medical staff all across the country is doing a great job managing this situation. We all need to change our behaviour when other people's lives are in danger. By adopting something like remote working we are helping decreasing chances that COVID-19 will spread more than usual. I changed a little bit my daily routine, but this will result in a great change for others.
 
 
 
