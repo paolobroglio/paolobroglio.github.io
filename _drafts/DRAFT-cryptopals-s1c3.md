@@ -5,7 +5,9 @@ tags: ["cryptography", "challenges", "go"]
 ---
 
 If you read [my previous post]({% post_url _posts/2025-01-22-cryptopals-s1c1 %}) you probably noticed that the solution is mostly based on the official 
-Base64 encoding RFC. This is quite interesting because there's no need to rely on any RFC, but instead is a real problem solving challenge and it's about decrypting an encrypted text. Some knowledge of the previous post might be useful for completing this challenge, especially the bitwise operations.
+Base64 encoding RFC. Now instead there's no need to rely on any implementation, but instead is a real problem solving challenge and it's about decrypting an encrypted text, which is kind of cool. 
+
+Some knowledge of the previous post might be useful for completing this challenge, especially the bitwise operations.
 
 ## The problem
 
@@ -23,12 +25,12 @@ Then there's an additional hint:
 
 Basically what we need to do is:
 
-- Find a subset of the English alphabet that contains only **most frequent letters**
+- Find a subset of the English alphabet letters that contains only **most frequent letters**
 - Perform a XOR against each of those letters' byte representation and find out which one was used during the encrypting phase
 
 ## Solution
 
-Since the cipher revolves around a XOR operation we can tackle that first and then we can move on to the logic itself. 
+Since the cipher revolves around a XOR operation we can tackle that first and then we can move on to the implementation of the cipher itself. 
 
 ### How XOR works
 
@@ -52,15 +54,16 @@ The truth table for XOR:
 
 XOR is a fundamental operation in many cryptographic algorithms, such as:
 
-- **Stream ciphers**, where plaintext is XORed with a pseudorandom keystream.
-- **Block ciphers**, where XOR is used in modes like [[CBC|Cipher Block Chaining]] (Cipher Block Chaining) for chaining blocks of ciphertext together.
+- **Stream ciphers**: where plaintext is XORed with a pseudorandom keystream.
+- **Block ciphers**: where XOR is used in modes like CBC (Cipher Block Chaining) for chaining blocks of ciphertext together.
 
 Its efficiency and security level makes it a useful component in the cryptography world
 
 XOR is also a reversible operation: applying XOR twice with the same key returns the original data.
 
-- Example: If `C = P XOR K` (ciphertext = plaintext XOR key), then:
-    - Decryption: `P = C XOR K` (plaintext = ciphertext XOR key).
+- Example: 
+  - If `C = P XOR K` (ciphertext = plaintext XOR key), then:
+  - `P = C XOR K` (plaintext = ciphertext XOR key).
 
 ### Approaching the solution
 
@@ -68,13 +71,13 @@ We're gonna use XOR's **reversible property** to solve the challenge.
 
 Basically we will apply the `P = C XOR K` formula where `K` will be one of the most frequent letters used in the English alphabet.
 
-We'll try each letter and by taking a look at the plaintext we will understand which one of the letters is the actual key, because every decryption done with the wrong key will return a meaningless plaintext.
+We'll try this with each letter and by taking a look at the plaintext we will understand which one is the key, because every decryption done with the wrong key will return a meaningless plaintext.
 
 ### Utility functions
 
 The first thing to do is to create a function that perform the XOR between the input string and a single byte.
 
-We can start by re-using the utility function created for the first challenge that creates a byte array starting from a string.
+We can start by re-using the utility function created for the first challenge. The `ConvertHexStringToByteArray` creates a byte array starting from a string, making use of `strconv.ParseUint` Go function.
 
 ```go
 func ConvertHexStringToByteArray(hexString string) ([]byte, error) {
@@ -93,7 +96,7 @@ func ConvertHexStringToByteArray(hexString string) ([]byte, error) {
 ### The cipher itself
 
 XOR operation is done by using the `^` operator. 
-Then we can apply the formula is the one that has been presented above `P = C XOR K` . 
+Then we can apply the formula that has been presented above: `P = C XOR K`. 
 Doing this for every byte that compose the data will do the trick.
 
 ```go
@@ -112,11 +115,17 @@ fmt.Printf("Decryption result: %s\n", string(res))
 
 And see if the decryption result is meaningful or not.
 
-A trivial way of completing this challenge is to call the decode logic on each most frequent letter resulting in a simple for loop. But we can write a faster solution by leveraging Go routines and wait groups.
+### A trivial solution
+
+Now that we have the decode logic in place we could simply call it inside a *for loop* that tries to decode the data against each letter. That's fine but we could improve it a little bit.
+
+Imagine that we're not testing this against the most frequent letters. Imagine a larger subset of that and that in future we could test it against symbols too. This makes the for loop not the best solution in terms of performance... 
 
 ### Enter the Goroutines
 
-We're gonna lightweight threads that in Go are called *goroutines* so we can try to decode the string against each frequent letter in a parallel way.
+I think we can make good use of Go's concurrent package and treat each computation as a separate working thread. So we can save some time.
+
+We're gonna use lightweight threads that in Go are called *goroutines* so we can try to decode the string against each frequent letter in parallel.
 
 In order to achieve this we also need a `WaitGroup`. This is a structure that is used to check if a collection of goroutines has finished its work. This quotation is taken from [Go sync package documentation](https://pkg.go.dev/sync#example-WaitGroup)
 
@@ -128,11 +137,11 @@ We can start by declaring the WaitGroup and the channel
 
 ```go
 var wg sync.WaitGroup
-results := make(chan []byte
+results := make(chan []byte)
 ```
 
 Then we loop over the most frequent letters collection and:
-- Add 1 to the WaitGroup since we're spawning a new goroutine
+- Add **1** to the WaitGroup since we're spawning a new goroutine
 - Spawn a new goroutine that computes the XOR against the current letter and puts the result inside the `results` channel
 
 ```go
@@ -191,16 +200,16 @@ Deciphered: Bnnjhof!LB&r!mhjd!`!qntoe!ng!c`bno
 Deciphered: Ammikle"OA%q"nkig"c"rmwlf"md"`caml
 Deciphered: P||xz}t3^P4`3zxv3r3c|f}w3|u3qrp|}
 Deciphered: Maaeg`i.CM)}.bgek.o.~a{`j.ah.loma`
-Deciphered: Cooking MC's like a pound of bacon
+--> Deciphered: Cooking MC's like a pound of bacon <--
 Deciphered: Jffb`gn)DJ.z)e`bl)h)yf|gm)fo)khjfg
 Deciphered: Q}}y{|u2_Q5a2~{yw2s2b}g|v2}t2psq}|
 ```
 
-In fact the challenge tells about a set of letters that is usually used to perform a check based on frequency
+The challenge tells about a set of letters that is usually used to perform a check based on frequency
 
 > "ETAOIN SHRDLU"
 
-Which is also a famous joke, [read more of this on Wikipedia](https://en.wikipedia.org/wiki/Etaoin_shrdlu)
+Which is also a famous joke, [check this out](https://en.wikipedia.org/wiki/Etaoin_shrdlu)
 
 # Wrapping up
 
