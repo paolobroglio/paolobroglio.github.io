@@ -259,6 +259,8 @@ If you’re looking for next steps or fun challenges, here are a few ideas to ke
 
 If you’ve followed along this far — hats off to you! You’ve just recreated the core of a 1990s game engine from scratch. More than that, you’ve unlocked a powerful new lens for thinking about computer graphics. Raycasting is approachable, educational, and just plain fun.
 
+[Checkout the full implementation on my GitHub Page](https://github.com/paolobroglio/raycaster)
+
 ## Useful resources
 
 - [Video - Super Fast Ray Casting in Tiled Worlds using DDA](https://www.youtube.com/watch?v=NbSee-XM7WA)
