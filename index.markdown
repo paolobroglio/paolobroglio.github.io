@@ -4,3 +4,5 @@
 
 layout: home
 ---
+
+Check out my [devlog](/devlog/) for quick development updates!
