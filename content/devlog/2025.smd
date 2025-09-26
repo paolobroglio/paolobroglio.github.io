@@ -1,0 +1,78 @@
+---
+.title = "Devlog - 2025",
+.date = @date("2025-01-01T00:00:00"),
+.author = "Paolo Broglio",
+.layout = "devlog.shtml",
+.draft = false,
+--- 
+[]($section.id('about'))
+## About this Devlog
+
+You can [subscribe the latest devlog via RSS]($link.page('devlog').alternative('rss')).
+
+This page lists entries for the year 2025, for past or future entries consult the
+[devlog archive](/devlog/).
+
+## [Is not feasible for function types to be instances Eq]($section.id("2025-09-11T00:00:00"))
+
+Exercise 5 in set 3.11 in "Programming in Haskell" book asked:
+
+> Why is not feasible in general for function types to be instances of `Eq` class?
+
+The answer was not as easy as I thought. Everything revolves around the problem of computing
+the equality of two functions, which is an **undecidable** problem. 
+The mathematical definition of function equality (extensional equality) requires that 
+f == g if and only if f(x) == g(x) for all possible inputs x. 
+While this definition is mathematically correct, implementing it computably is undecidable, 
+meaning that we cannot write an algorithm that reliably determines whether two arbitrary functions are extensionally equal.
+Consider an infinite domain like `Int -> Int`. You won't be able to test it for each possible input.
+
+## [Programming Haskell Book]($section.id("2025-09-07T00:00:00"))
+### Diving Deeper into Haskell
+
+Recently, my colleagues and I worked through [Algebra Driven Design](https://leanpub.com/algebra-driven-design) by Sandy Maguire at work. 
+The book proved to be an excellent exploration of abstraction's power, demonstrating key concepts through compelling real-world examples. 
+While it's heavily focused on Haskell, the insights translated well beyond the language itself.
+
+The implementation sections challenged me considerably. Haskell's syntax still feels unfamiliar but 
+the struggle was worthwhile. Algebra Driven Design opened my eyes to the elegance of functional 
+programming and sparked a genuine curiosity about advanced FP concepts and the benefits of robust type systems.
+
+This experience convinced me it was time to tackle Haskell more systematically.
+
+### Programming in Haskell
+
+[Programming in Haskell](https://people.cs.nott.ac.uk/pszgmh/pih.html) by [Graham Hutton](https://people.cs.nott.ac.uk/pszgmh/) has 
+been sitting on my reading list for months. With my renewed interest in functional programming, now feels like the perfect time to dive in.
+
+I'm planning to work through the exercises methodically and document my solutions [here](https://github.com/paolobroglio/programming-in-haskell-solutions). 
+Looking forward to building a stronger foundation in Haskell and seeing where this journey leads.
+
+## [B-Tree Search]($section.id("2025-09-06T00:00:00"))
+This would do the trick for now.
+```go
+type BTreeNode struct {
+	keys []string
+	locations []Location
+	children []*BTreeNode
+	isLeaf bool
+	keyCount int
+}
+```
+Searching a key in a BTree is quite trivial, even if the data structure itself is not.
+I just need to remember to keep a single `i` variable to go over `keys` and `locations` 
+arrays and do the necessary comparisons to retrieve the correct value.
+
+I've written a recursive function to do the search and it should be ok because the higher is 
+the `degree` value the lower will be the depth of the tree. So the recursion will not be an issue.
+```
+B-tree with degree 100:
+- 1 million keys: ~3 levels deep
+- 1 billion keys: ~4-5 levels deep  
+- 1 trillion keys: ~6-7 levels deep
+```
+
+## [Key-Value Store]($section.id("2025-09-05T00:00:00"))
+I'm currently [working on a key-value store](https://github.com/paolobroglio/kvstore) while reading [Design Data-Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/) by Martin Kleppmann. BTW it's a great book!
+
+I'm also trying to create a benchmarking framework around it for testing different indexes implementations and evaluating the store's performances.

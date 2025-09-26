@@ -1,13 +1,10 @@
 ---
-layout: post
-title:  "Cryptopals - Set 1 - Single-byte cipher"
-tags: ["cryptography", "challenges", "go"]
+.title = "Cryptopals Solutions Set 1 Challenge 3",
+.date = @date("2025-01-26T00:00:00"),
+.author = "Paolo Broglio",
+.layout = "post.shtml",
+.draft = false,
 ---
-
-If you read [my previous post]({% post_url _posts/2025-01-22-cryptopals-s1c1 %}) you probably noticed that the solution is mostly based on the official 
-Base64 encoding RFC. Now instead there's no need to rely on any implementation, but instead is a real problem solving challenge and it's about decrypting an encrypted text, which is kind of cool. 
-
-Some knowledge of the previous post might be useful for completing this challenge, especially the bitwise operations.
 
 ## The problem
 

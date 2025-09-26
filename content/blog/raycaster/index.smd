@@ -1,8 +1,10 @@
 ---
-layout: post
-title:  "Raycasting and the DDA algorithm"
-tags: ["computer-graphics", "c", "raycasting"]
----
+.title = "Raycasting and the DDA algorithm",
+.date = @date("2025-04-17T00:00:00"),
+.author = "Paolo Broglio",
+.layout = "post.shtml",
+.draft = false,
+--- 
 
 ## Introduction
 
@@ -23,7 +25,7 @@ Notably, id Software’s next project, _Doom_, abandoned the DDA-based raycastin
 
 Imagine standing in a dark maze with a flashlight. You shine the beam straight ahead, and wherever the light hits a wall, you stop. Now, imagine doing this not just once, but *hundreds of times*, each beam pointing in a slightly different direction. 
 
-![raycasting-1.png]({{ site.baseurl }}/assets/images/raycasting-1.png)
+[Top-down view of raycasting](<$image.asset("raycasting-1.png").size(800, 600)>)
 
 This process of sending out "beams" or **rays** from a specific point to detect objects in a space is what we call **raycasting**.
 This technique can be used to figure out what parts of a virtual world are visible from a particular point of view—like the eyes of a player in a game. 
@@ -42,7 +44,7 @@ After the ray has been cast, you can walk along the line, tile by tile, until yo
 What DDA does is that it breaks down the ray into **x** and **y** steps. At each step it checks if it hit a wall. If not, it takes another step, and another, and another. 
 Until—bam—it finds a wall!
 
-![raycasting-2.png]({{ site.baseurl }}/assets/images/raycasting-2.png)
+[DDA Algorithm Visualized](<$image.asset("raycasting-2.png").size(400, 300)>)
 
 ### From casted rays to projected walls
 
@@ -52,7 +54,7 @@ I won’t dive too deep into the tricky trigonometry behind it — there are ple
 
 The core idea is this: given the **distance** from the player to the wall hit by a ray, we can figure out the **height** of that wall as it should appear in our fake 3D perspective. Let’s break that down a bit.
 
-![raycasting-5.png]({{ site.baseurl }}/assets/images/raycasting-5.png)
+[Raycasting and projected walls](<$image.asset("raycasting-5.png").size(400, 300)>)
 
 Think back to the dark maze metaphor we used earlier. The **closer** a wall is when we shine a flashlight toward it, the **shorter** the beam will be. And the **closer** the wall is, the **taller** it looks to us. That’s basically how **perspective** works — things that are closer appear larger.
 
@@ -66,14 +68,14 @@ In my implementation, I wrote a function called `castRay` that does exactly what
 
 First, we take in a `rayAngle`, normalize it, and determine which direction the ray is facing:
 
-{% highlight c %}
+```c
 rayAngle = normalizeAngle(rayAngle);
 
 int isRayFacingDown = rayAngle > 0 && rayAngle < PI;
 int isRayFacingUp = !isRayFacingDown;
 int isRayFacingRight = rayAngle < 0.5 * PI || rayAngle > 1.5 * PI;
 int isRayFacingLeft = !isRayFacingRight;
-{% endhighlight %}
+```
 
 This helps us figure out how to move through the grid, and more importantly, how to offset the intersection checks to avoid bugs when the ray is exactly on a tile edge.
 
@@ -81,7 +83,7 @@ This helps us figure out how to move through the grid, and more importantly, how
 
 Next, we calculate where the ray first intersects a horizontal grid line and how it steps from one horizontal line to the next:
 
-{% highlight c%}
+```c
 yintercept = floor(player.y / TILE_SIZE) * TILE_SIZE;
 yintercept += isRayFacingDown ? TILE_SIZE : 0;
 
@@ -91,11 +93,11 @@ ystep = TILE_SIZE * (isRayFacingUp ? -1 : 1);
 xstep = TILE_SIZE / tan(rayAngle);
 xstep *= (isRayFacingLeft && xstep > 0) ? -1 : 1;
 xstep *= (isRayFacingRight && xstep < 0) ? -1 : 1;
-{% endhighlight %}
+```
 
 Then we enter a loop, stepping ray-by-ray until we hit a wall or go out of bounds:
 
-{% highlight c%}
+```c
 while (nextHorizontalIntersectionX >= 0 && nextHorizontalIntersectionX <= WINDOW_WIDTH &&
        nextHorizontalIntersectionY >= 0 && nextHorizontalIntersectionY <= WINDOW_HEIGHT) {
 
@@ -109,21 +111,21 @@ while (nextHorizontalIntersectionX >= 0 && nextHorizontalIntersectionX <= WINDOW
         nextHorizontalIntersectionY += ystep;
     }
 }
-{% endhighlight %}
+```
 
 ### Vertical Intersections Work the Same Way
 
 We repeat the same logic, but stepping through **vertical** grid lines this time:
 
-{% highlight c%}
+```c
 xintercept = floor(player.x / TILE_SIZE) * TILE_SIZE;
 xintercept += isRayFacingRight ? TILE_SIZE : 0;
 yintercept = player.y + (xintercept - player.x) * tan(rayAngle);
-{% endhighlight %}
+```
 
 ... and again:
 
-{% highlight c%}
+```c
 while (nextVerticalIntersectionX >= 0 && nextVerticalIntersectionX <= WINDOW_WIDTH &&
        nextVerticalIntersectionY >= 0 && nextVerticalIntersectionY <= WINDOW_HEIGHT) {
 
@@ -137,13 +139,13 @@ while (nextVerticalIntersectionX >= 0 && nextVerticalIntersectionX <= WINDOW_WID
         nextVerticalIntersectionY += ystep;
     }
 }
-{% endhighlight %}
+```
 
 ### Choosing the Closest Hit
 
 Once both intersection checks are done, we simply compare their distances:
 
-{% highlight c%}
+```c
 float horizontalIntersectionDistance = foundHorizontalWallHit
     ? distanceBetweenTwoPoints(player.x, player.y, horizontalWallHitX, horizontalWallHitY)
     : INT_MAX;
@@ -153,17 +155,17 @@ float verticalIntersectionDistance = foundVerticalWallHit
     : INT_MAX;
 
 float distance = fmin(horizontalIntersectionDistance, verticalIntersectionDistance);
-{% endhighlight %}
+```
 
 Finally we store each of these informations inside `rays` array for each considered ray.
 
-{% highlight c%}
+```c
 rays[rayIndex].distance = distance;
 rays[rayIndex].wallHitX = wallHitX;
 rays[rayIndex].wallHitY = wallHitY;
 rays[rayIndex].wasHitVertical = wasHitVertical;
 rays[rayIndex].rayAngle = rayAngle;
-{% endhighlight %}
+```
 
 ## Projecting Walls on the Screen
 
@@ -177,9 +179,9 @@ Let’s walk through what it does.
 
 We correct the raw distance to avoid the **fish-eye effect**, which occurs because rays at the edges of the FOV travel farther than the central ones:
 
-{% highlight c%}
+```c
 float normalizedDistance = rays[i].distance * cos(rays[i].rayAngle - player.rotationAngle);
-{% endhighlight %}
+```
 
 This "squashes" diagonal distortion and makes all rays behave as if they were cast straight ahead.
 
@@ -187,10 +189,10 @@ This "squashes" diagonal distortion and makes all rays behave as if they were ca
 
 We then calculate how tall the wall should appear, based on its distance from the player. Closer walls will appear taller, and farther ones shorter — just like in real life:
 
-{% highlight c%}
+```c
 float distanceFromProjectionPlane = (WINDOW_WIDTH / 2) / tan(FOV_ANGLE / 2);
 float projectedWallHeight = (TILE_SIZE / normalizedDistance) * distanceFromProjectionPlane;
-{% endhighlight %}
+```
 
 This mimics how light and perspective scale objects in the real world.
 
@@ -198,14 +200,14 @@ This mimics how light and perspective scale objects in the real world.
 
 Once we know the height of the wall on screen, we can compute where it should start and end vertically:
 
-{% highlight c%}
+```c
 int wallStripHeight = projectedWallHeight;
 int wallStartPixel = (WINDOW_HEIGHT / 2) - (wallStripHeight / 2);
 wallStartPixel = wallStartPixel < 0 ? 0 : wallStartPixel;
 
 int wallEndPixel = wallStartPixel + wallStripHeight;
 wallEndPixel = wallEndPixel > WINDOW_HEIGHT ? WINDOW_HEIGHT : wallEndPixel;
-{% endhighlight %}
+```
 
 This centers the wall strip vertically in the middle of the screen.
 
@@ -217,7 +219,7 @@ Now comes the final touch — drawing! For each column (or strip), we fill in th
 - **Wall**: the vertical slice of the actual wall
 - **Floor**: everything below the wall
 
-{% highlight c%}
+```c
 for (int y = 0; y < wallStartPixel; y++) {
 	colorBuffer.Buffer[WINDOW_WIDTH * y + i] = 0xFF333333; // Sky
 }
@@ -229,11 +231,11 @@ for (int y = wallStartPixel; y < wallEndPixel; y++) {
 for (int y = wallEndPixel; y < WINDOW_HEIGHT; y++) {
 	colorBuffer.Buffer[WINDOW_WIDTH * y + i] = 0xFF777777; // Floor
 }
-{% endhighlight %}
+```
 
 You might notice that walls hit vertically are drawn a bit darker or lighter. That’s a simple shading trick to add depth and help distinguish wall orientation.
 
-![raycasting-4.png]({{ site.baseurl }}/assets/images/raycasting-4.png)
+[An example of the raycasting engine](<$image.asset("raycasting-4.png").size(800, 600)>)
 
 ## Wrapping It All Together
 
