@@ -13,6 +13,18 @@ You can [subscribe the latest devlog via RSS]($link.page('devlog').alternative('
 This page lists entries for the year 2025, for past or future entries consult the
 [devlog archive](/devlog/).
 
+## [Migrating my blog to Zine]($section.id("2025-09-26T00:00:00"))
+
+I discovered Zig and its community a couple of months ago, and 
+I've started lurking here and there, building simple stuff, learning the language, and getting to know some projects. 
+I enjoy working with Zig because it made me rediscover the pleasure of exploring low-level programming with a feeling of having better control over it.
+
+Among all the open source projects built with Zig, I quickly discovered [Zine](https://zine-ssg.io/), which is a static site generator. 
+So I tried to port my Jekyll-based blog to it, and it worked like a charm. 
+I began by simply transferring all the content, but I'm planning to do a complete restyling.
+
+This could also be my chance to get involved in contributing to this amazing project.
+
 ## [Is not feasible for function types to be instances Eq]($section.id("2025-09-11T00:00:00"))
 
 Exercise 5 in set 3.11 in "Programming in Haskell" book asked:
