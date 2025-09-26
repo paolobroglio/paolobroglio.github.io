@@ -1,0 +1,14 @@
+---
+.title = "Blog",
+.date = @date("1990-01-01T00:00:00"),
+.author = "Sample Author",
+.layout = "blog.shtml",
+.alternatives = [{ 
+    .name = "rss",
+    .layout = "blog.xml", 
+    .output = "index.xml",
+}],
+.draft = false,
+---
+
+Please consider subscribing to the [RSS feed]($link.alternative('rss')).

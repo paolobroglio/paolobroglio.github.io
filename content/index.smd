@@ -1,0 +1,11 @@
+---
+.title = "Homepage",
+.date = @date("2025-09-23T00:00:00"),
+.author = "Paolo Broglio",
+.layout = "index.shtml",
+.draft = false,
+--- 
+
+Hello there, Paolo here. I’m a Computer Scientist and Software Engineer. 
+On this blog you will find TILs and writeups as well as reviews and personal insights on everything revolving around software.
+
