@@ -13,6 +13,26 @@ You can [subscribe the latest devlog via RSS]($link.page('devlog').alternative('
 This page lists entries for the year 2025, for past or future entries consult the
 [devlog archive](/devlog/).
 
+
+## [Porting a C-based 3D renderer]($section.id("2025-10-03T00:00:00"))
+
+My journey practicing Zig led me to port a 3D renderer originally written in C. I started working on it last year for fun and to learn more about the basics of computer graphics.
+
+The logic is quite straightforward:
+
+- Open a Raylib window
+- Read faces and vertices from an OBJ file and load them into a mesh structure
+- During the game loop's update phase, compute the triangles to render
+- Write everything to a color buffer
+- Render the color buffer
+
+Overall, the project is far from finished, but I can already render complete objects with wireframes, vertices, and colored faces.
+The Zig porting process has been surprisingly smooth because I think Zig really shines when working 
+with code file by file. 
+Basically, I ported every .c and .h file into a .zig file. A piece of cake.
+What I enjoyed most was the explicit type casting. 
+This is interesting because in another project I found it somewhat tedious, but here it actually made the porting process safer and more reliable.
+
 ## [Migrating my blog to Zine]($section.id("2025-09-26T00:00:00"))
 
 I discovered Zig and its community a couple of months ago, and 
